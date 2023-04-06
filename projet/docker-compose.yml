@@ -1,0 +1,33 @@
+version: '3'
+
+services:
+  mon_app_web:
+    image: mysql:8
+    environment:
+      MYSQL_ROOT_PASSWORD: password
+      MYSQL_DATABASE: bdd
+    ports:
+      - "3306:3306"
+    networks:
+      - mynetwork
+
+  web:
+    build: .
+    command: /app/docker-entrypoint.sh  
+    volumes:
+      - .:/app
+    ports:
+      - "8000:8000"
+    depends_on:
+      - mon_app_web
+    environment:
+      - MYSQL_DATABASE=bdd
+      - MYSQL_USER=root
+      - MYSQL_PASSWORD=password
+      - MYSQL_HOST=mon_app_web
+    networks:
+      - mynetwork
+
+networks:
+  mynetwork:
+    driver: bridge
